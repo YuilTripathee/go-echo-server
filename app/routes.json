@@ -1,0 +1,27 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/v1/",
+    "name": "main.sendInfo"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/img/:id",
+    "name": "main.sendImage"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/source/DB/",
+    "name": "main.sendSampleDBData"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/source/local/",
+    "name": "main.sendSampleLocalData"
+  },
+  {
+    "method": "GET",
+    "path": "static/*",
+    "name": "github.com/labstack/echo.common.static.func1"
+  }
+]

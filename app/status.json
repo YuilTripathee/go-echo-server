@@ -1,0 +1,27 @@
+[
+    {
+        "status_code": 500,
+        "response_code": 0,
+        "status_message": "Invalid Input"
+    },
+    {
+        "status_code": 404,
+        "response_code": -1,
+        "status_message": "Must provide an argument"
+    },
+    {
+        "status_code": 200,
+        "response_code": 1,
+        "status_message": "Everything's fine!"
+    },
+    {
+        "status_code": 500,
+        "response_code": -2,
+        "status_message": "Error found with querying with database"
+    },
+    {
+        "status_code": 404,
+        "response_code": -3,
+        "status_message": "Data not found in database"
+    }
+]
