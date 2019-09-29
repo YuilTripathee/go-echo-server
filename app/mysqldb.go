@@ -13,17 +13,18 @@ var (
 	dbname     = "database_name"  // name of the database
 	dbcharset  = "utf8"           // database character set
 
-	// list of relations in database
+	// list of relations in database needed for querying
 	sampleTable = "sample" // table name for airplane
 )
 
 // function to generate database connection string
 func getConnectionString() string {
+	// final output sample: root:password@tcp(127.0.0.1:3306)/database_name?charset=utf-8
 	return dbusername + ":" + dbpassword + "@tcp(" + dbhostsip + ")/" + dbname + "?charset=" + dbcharset
 }
 
 // function to return JSON array from a MySQL database
-func getJSONFromDB(sqlString string) ([]map[string]interface{}, error) {
+func changeDBdataToJSON(sqlString string) ([]map[string]interface{}, error) {
 	sqlConnString := getConnectionString()
 	db, err := sql.Open("mysql", sqlConnString) //
 	if err != nil {
@@ -79,15 +80,15 @@ func getDataDBbyIndex(table string, index string, id string) (int, map[string]in
 	status := 200
 	response := make(map[string]interface{})
 	sqlQuery := fmt.Sprintf("SELECT * FROM %s WHERE %s = '%s';", table, index, id)
-	dbData, err := getJSONFromDB(sqlQuery)
+	dbData, err := changeDBdataToJSON(sqlQuery)
 	if err != nil {
 		status = 500
-		response = statMsgData[3]
+		response = statMsgData[3] // Error found querying with the database
 	} else if len(dbData) == 0 {
 		status = 500
-		response = statMsgData[4]
+		response = statMsgData[4] // Data not found in the database
 	} else {
-		response = statMsgData[2]
+		response = statMsgData[2] // Everything's fine
 		response["data"] = dbData
 	}
 	return status, response

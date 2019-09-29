@@ -23,6 +23,9 @@ var (
 	magenta     = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
 	cyan        = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
 	reset       = string([]byte{27, 91, 48, 109})
+
+	// list of status messages (to be sent as response
+	// for e.g. [{"status_code" : 0, "response_code" : 200, "message" : "Everything's alright!"},...])
 	statMsgData = GetJSONArrayData("status.json")
 )
 
@@ -65,7 +68,11 @@ func sendSampleDBData(c echo.Context) error {
 
 // route handler function for local JSON data
 func sendSampleLocalData(c echo.Context) error {
-	status, response := 200, GetJSONObjectData("sample.json")
+	status, response_data := 200, GetJSONObjectData("res/sample.json")
+	// this system is required only for local JSON (not from database)
+	// in database querying system, this is implemented earlier
+	response := statMsgData[2]
+	response["data"] = response_data
 	return c.JSON(status, response)
 }
 
@@ -73,8 +80,21 @@ func main() {
 	// block to confirm if the runtime enviroment is for DEVELOPMENT or PRODUCTION
 	var ENVConfig string
 	CLIConfig := os.Args
+	
+	// Initialization of go-echo server
+	e := echo.New()
+
+	// debug mode (optional)
+	// e.Debug = true 
+
+	// just to hide the echo framework banner
+	// e.HideBanner = true	
+
+	// Adding trailing slash to request URI
+	// e.Pre(middleware.AddTrailingSlash())
 
 	// if args supplied (just for logger colorization)
+	// also to log out state of back-end (PRODUCTION or DEVELOPMENT)
 	if len(CLIConfig) > 1 {
 		switch CLIConfig[1] {
 		case "DEV":
@@ -89,19 +109,12 @@ func main() {
 		// if no args supplied
 		ENVConfig = "DEV"
 	}
-
-	e := echo.New()
-
-	// debug mode
-	// e.Debug = true // optional
-	// just to hide the echo framework commercial
-	e.HideBanner = true
+		
+	
 	// name definition for the runtime application (along with the runtime enviroment variant)
 	name := fmt.Sprintf("R&D-%s", ENVConfig)
-
-	// Adding trailing slash to request URI
-	// e.Pre(middleware.AddTrailingSlash())
-
+		
+	// coloration block
 	// tailored (TBC: colored) logger adapting to the different runtime environment
 	switch ENVConfig {
 	case "DEV":
@@ -174,7 +187,7 @@ func main() {
 	APIRoute := e.Group("/api")
 	// grouping routes for version 1.0 API
 	v1route := APIRoute.Group("/v1")
-	v1route.GET("/", sendInfo)                         // route for API info
+	v1route.GET("/", sendInfo) 	// sample route to send normal JSON from program variable (route for API info)
 	v1route.GET("/img/:id", sendImage)                 // sample route to stream image (same apply for music, video and other file types)
 	v1route.GET("/source/DB/", sendSampleDBData)       // sample route to demonstrate data transfer from database (MySQL here)
 	v1route.GET("/source/local/", sendSampleLocalData) // sample route to demonstrate data transfer from local JSON file
@@ -185,7 +198,7 @@ func main() {
 	// stores routes available in the system in a JSON file
 	data, err := json.MarshalIndent(e.Routes(), "", "  ")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err) // error handling in Golang works this way
 	}
 	ioutil.WriteFile("routes.json", data, 0644)
 
