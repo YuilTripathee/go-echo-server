@@ -15,14 +15,14 @@ import (
 
 var (
 	// color variables (in bytecode form)
-	green       = string([]byte{27, 91, 57, 55, 59, 52, 50, 109})
-	white       = string([]byte{27, 91, 57, 48, 59, 52, 55, 109})
-	yellow      = string([]byte{27, 91, 57, 48, 59, 52, 51, 109})
-	red         = string([]byte{27, 91, 57, 55, 59, 52, 49, 109})
-	blue        = string([]byte{27, 91, 57, 55, 59, 52, 52, 109})
-	magenta     = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
-	cyan        = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
-	reset       = string([]byte{27, 91, 48, 109})
+	green   = string([]byte{27, 91, 57, 55, 59, 52, 50, 109})
+	white   = string([]byte{27, 91, 57, 48, 59, 52, 55, 109})
+	yellow  = string([]byte{27, 91, 57, 48, 59, 52, 51, 109})
+	red     = string([]byte{27, 91, 57, 55, 59, 52, 49, 109})
+	blue    = string([]byte{27, 91, 57, 55, 59, 52, 52, 109})
+	magenta = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
+	cyan    = string([]byte{27, 91, 57, 55, 59, 52, 54, 109})
+	reset   = string([]byte{27, 91, 48, 109})
 
 	// list of status messages (to be sent as response
 	// for e.g. [{"status_code" : 0, "response_code" : 200, "message" : "Everything's alright!"},...])
@@ -68,11 +68,11 @@ func sendSampleDBData(c echo.Context) error {
 
 // route handler function for local JSON data
 func sendSampleLocalData(c echo.Context) error {
-	status, response_data := 200, GetJSONObjectData("res/sample.json")
+	status, responseData := 200, GetJSONObjectData("res/sample.json")
 	// this system is required only for local JSON (not from database)
 	// in database querying system, this is implemented earlier
 	response := statMsgData[2]
-	response["data"] = response_data
+	response["data"] = responseData
 	return c.JSON(status, response)
 }
 
@@ -80,15 +80,15 @@ func main() {
 	// block to confirm if the runtime enviroment is for DEVELOPMENT or PRODUCTION
 	var ENVConfig string
 	CLIConfig := os.Args
-	
+
 	// Initialization of go-echo server
 	e := echo.New()
 
 	// debug mode (optional)
-	// e.Debug = true 
+	// e.Debug = true
 
 	// just to hide the echo framework banner
-	// e.HideBanner = true	
+	// e.HideBanner = true
 
 	// Adding trailing slash to request URI
 	// e.Pre(middleware.AddTrailingSlash())
@@ -109,11 +109,10 @@ func main() {
 		// if no args supplied
 		ENVConfig = "DEV"
 	}
-		
-	
+
 	// name definition for the runtime application (along with the runtime enviroment variant)
 	name := fmt.Sprintf("R&D-%s", ENVConfig)
-		
+
 	// coloration block
 	// tailored (TBC: colored) logger adapting to the different runtime environment
 	switch ENVConfig {
@@ -187,7 +186,7 @@ func main() {
 	APIRoute := e.Group("/api")
 	// grouping routes for version 1.0 API
 	v1route := APIRoute.Group("/v1")
-	v1route.GET("/", sendInfo) 	// sample route to send normal JSON from program variable (route for API info)
+	v1route.GET("/", sendInfo)                         // sample route to send normal JSON from program variable (route for API info)
 	v1route.GET("/img/:id", sendImage)                 // sample route to stream image (same apply for music, video and other file types)
 	v1route.GET("/source/DB/", sendSampleDBData)       // sample route to demonstrate data transfer from database (MySQL here)
 	v1route.GET("/source/local/", sendSampleLocalData) // sample route to demonstrate data transfer from local JSON file
